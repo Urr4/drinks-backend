@@ -2,9 +2,6 @@ package de.urr4.drinkmanagerbackend.services;
 
 import de.urr4.drinkmanagerbackend.repositories.UserRepository;
 import de.urr4.wine.entities.User;
-import io.leangen.graphql.metadata.strategy.query.PublicResolverBuilder;
-import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
-import io.leangen.graphql.spqr.spring.annotations.WithResolverBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,19 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@GraphQLApi
-@WithResolverBuilder(PublicResolverBuilder.class)
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public List<User> getUsers(){
+    @Autowired
+    public UserService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+
+    public List<User> getAllUsers() {
         List<User> allUsers = new ArrayList<>();
 
         Iterable<User> users = userRepository.findAll();
-        users.forEach(u -> allUsers.add(u));
+        users.forEach(allUsers::add);
 
         return allUsers;
+    }
+
+    public User saveUser(User user) {
+        userRepository.save(user);
+        return user;
     }
 }
